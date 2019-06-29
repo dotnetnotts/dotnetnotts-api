@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Meetup.Api;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace dotnetnotts_api
 {
@@ -22,15 +23,22 @@ namespace dotnetnotts_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddCors(options =>
             {
-                options.AddPolicy("AnyOrigin", builder =>
-                {
-                    builder
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod();
-                });
+                options.AddPolicy("AllowAll",
+                   builder =>
+                   {
+                       builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                   });
+            });
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.Configure<MvcOptions>(options => {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAll"));
             });
         }
 
@@ -39,16 +47,16 @@ namespace dotnetnotts_api
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                _ = app.UseDeveloperExceptionPage();
             }
             else
             {
                 app.UseHsts();
             }
 
+            app.UseCors("AllowAll");
             app.UseHttpsRedirection();
             app.UseMvc();
-            app.UseCors();
 
             ConfigureMeetupApi();
         }
