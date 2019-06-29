@@ -23,6 +23,15 @@ namespace dotnetnotts_api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AnyOrigin", builder =>
+                {
+                    builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod();
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,6 +48,7 @@ namespace dotnetnotts_api
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseCors();
 
             ConfigureMeetupApi();
         }
