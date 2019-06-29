@@ -19,16 +19,25 @@ namespace dotnetnotts_api
             .ConfigureAppConfiguration((ctx, builder) =>
             {
                 var keyVaultEndpoint = GetKeyVaultEndpoint();
-                var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                var keyVaultClient = new KeyVaultClient(
-                    new KeyVaultClient.AuthenticationCallback(
-                        azureServiceTokenProvider.KeyVaultTokenCallback));
-                builder.AddAzureKeyVault(
-                    keyVaultEndpoint, keyVaultClient, new DefaultKeyVaultSecretManager());
-
+                if (keyVaultEndpoint != null)
+                {
+                    var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                    var keyVaultClient = new KeyVaultClient(
+                        new KeyVaultClient.AuthenticationCallback(
+                            azureServiceTokenProvider.KeyVaultTokenCallback));
+                    builder.AddAzureKeyVault(
+                        keyVaultEndpoint, keyVaultClient, new DefaultKeyVaultSecretManager());
+                }
             })
             .UseStartup<Startup>();
 
-        private static string GetKeyVaultEndpoint() => "https://dotnetnotts-keyvault.vault.azure.net";
+        private static string GetKeyVaultEndpoint()
+        {
+#if DEBUG
+            return null;
+#else
+            return "https://dotnetnotts-keyvault.vault.azure.net";
+# endif
+        }
     }
 }
