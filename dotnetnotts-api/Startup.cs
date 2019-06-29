@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+
+using Meetup.Api;
 
 namespace dotnetnotts_api
 {
@@ -42,6 +39,19 @@ namespace dotnetnotts_api
 
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            ConfigureMeetupApi();
+        }
+
+        private void ConfigureMeetupApi()
+        {
+            var clientId = Configuration["dotnetnotts-api:ClientId"];
+            var clientSecret = Configuration["dotnetnotts-api:ClientSecret"];
+
+            if (string.IsNullOrWhiteSpace(clientId)) throw new ArgumentException("ClientId is not set");
+            if (string.IsNullOrWhiteSpace(clientSecret)) throw new ArgumentException("ClientSecret is not set");
+
+            MeetupApi.ConfigureOauth(clientId, clientSecret);
         }
     }
 }
