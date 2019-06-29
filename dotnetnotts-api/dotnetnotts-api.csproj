@@ -22,4 +22,7 @@
       <HintPath>..\..\MeetupApi\src\Meetup.Api\bin\Release\netstandard2.0\Meetup.Api.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="README.txt" />
+  </ItemGroup>
 </Project>
